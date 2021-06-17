@@ -1,0 +1,39 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+#chat {
+  height: 50vh;
+  position: relative;
+  padding: 2px;
+}
+
+#formMessage {
+  position: absolute;
+  bottom: 0;
+}
+
+#inputMessage {
+  width: 90vw;
+  height: 30px;
+  padding: 0;
+}
+
+#submitMessage {
+  width: 9vw;
+  height: 30px;
+  padding: 0;
+  border-radius: 0;
+  border-width: 1px;
+}
+
+ul#messages {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+ul#messages > li:nth-child(odd) {
+  background-color: #f5f5f5;
+}
