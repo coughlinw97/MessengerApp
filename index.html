@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>AngularJS Messenger</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.2/angular.min.js" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css">
+  </head>
+  <body>
+    <div id="newUser">
+      <form id="formUser">
+        <label for="inputUser">Username:</label>
+        <input type="text" id="inputUser"><br />
+        <input type="submit" id="submitUser">
+      </form>
+    </div>
+    <div id="chat">
+      <div>
+        <ul id="messages">
+        </ul>
+      </div>
+      <form id="formMessage">
+        <input type="text" id="inputMessage">
+        <input type="submit" value="Send Message" id="submitMessage">
+      </form>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      let socket = io();
+
+      document.getElementById('chat').style.visibility = 'hidden';
+
+      let formUser = document.getElementById('formUser');
+      let inputUser = document.getElementById('inputUser');
+
+      let formMessage = document.getElementById('formMessage');
+      let messages = document.getElementById('messages');
+      let inputMessage = document.getElementById('inputMessage');
+
+      socket.on('user connect', function(user) {
+        let item = document.createElement('li');
+        item.textContent = user + " joined the chat!";
+        messages.appendChild(item);
+      });
+
+      socket.on('chat message', function(message, user) {
+        let item = document.createElement('li');
+        item.textContent = user + ': ' + message;
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+      });
+/*
+      socket.on('recent messages', function(recentMessages) {
+        let item = document.createElement('li');
+        recentMessages.forEach(message => {
+          item.textContent = message.user + ': ' + message.message;
+          messages.appendChild(item);
+          window.scrollTo(0, document.body.scrollHeight);
+        });
+      });
+*/
+      socket.on('user disconnect', function(user) {
+        let item = document.createElement('li');
+        item.textContent = user + " left the chat";
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+      });
+
+      formUser.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (inputUser.value) {
+          socket.emit('user connect', inputUser.value);
+          inputUser.value = '';
+          document.getElementById('newUser').style.visibility = 'hidden';
+          document.getElementById('chat').style.visibility = 'visible';
+        }
+      });
+
+      formMessage.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (inputMessage.value) {
+          socket.emit('chat message', inputMessage.value);
+          inputMessage.value = '';
+        }
+      });
+    </script>
+  </body>
+</html>
